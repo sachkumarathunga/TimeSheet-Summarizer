@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { TimesheetComponent } from './timesheet/timesheet.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [TimesheetComponent], // Import TimesheetComponent
+  template: `<app-timesheet></app-timesheet>`,
 })
-export class AppComponent {
-  title = 'WeeklyTimesheetApp';
-}
+export class AppComponent {}
