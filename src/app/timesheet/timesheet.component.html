@@ -1,31 +1,31 @@
 <div class="container">
-    <h1>Weekly Timesheet Generator</h1>
-  
-    <!-- File upload input -->
-    <div class="upload-section">
-      <input type="file" (change)="onFileUpload($event)" multiple accept=".xlsx, .xls" />
-      <label for="file">
-        <span class="icon-upload"></span> Upload Timesheet(s)
-      </label>
-    </div>
-  
-    <!-- Display uploaded files -->
-    <div class="file-list" *ngIf="uploadedFilesCount > 0">
-      <h3>Uploaded Files</h3>
-      <div class="file-box" *ngFor="let file of uploadedFileNames">
-        <span class="icon-excel"></span>
-        <span class="file-name">{{ file }}</span>
-      </div>
-    </div>
-  
-    <!-- Generate buttons -->
-    <div class="buttons">
-      <button (click)="generateWeeklySummary()" [disabled]="uploadedFilesCount !== 1">
-        Generate Member Weekly File
-      </button>
-      <button (click)="generateGroupLeaderFile()" [disabled]="uploadedFilesCount <= 1">
-        Generate Group Leader File
-      </button>
-    </div>
+  <h1>Weekly Timesheet Generator</h1>
+
+  <div class="upload-section">
+    <input type="file" (change)="onWeeklyFileUpload($event)" multiple accept=".xlsx, .xls" />
+    <label for="file">📤 Upload Weekly Timesheet</label>
   </div>
-  
+
+  <div class="file-list" *ngIf="uploadedFilesCount > 0">
+    <h3>Uploaded Weekly Files</h3>
+    <div *ngFor="let file of uploadedFileNames">{{ file }}</div>
+  </div>
+
+  <button (click)="generateWeeklySummary()">Generate Weekly File</button>
+</div>
+
+<div class="leader-container">
+  <h1>Team Leader Timesheet Generator</h1>
+
+  <div class="upload-section">
+    <input type="file" (change)="onLeaderFileUpload($event)" multiple accept=".xlsx, .xls" />
+    <label for="file">📤 Upload Team Leader Timesheet</label>
+  </div>
+
+  <div class="file-list" *ngIf="leaderUploadedFilesCount > 0">
+    <h3>Uploaded Leader Files</h3>
+    <div *ngFor="let file of leaderUploadedFileNames">{{ file }}</div>
+  </div>
+
+  <button (click)="generateTeamLeaderTimesheet()">Generate Team Leader File</button>
+</div>

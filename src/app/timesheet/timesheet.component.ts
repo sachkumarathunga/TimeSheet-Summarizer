@@ -11,63 +11,111 @@ import saveAs from 'file-saver';
   styleUrls: ['./timesheet.component.css'],
 })
 export class TimesheetComponent {
-  dailyData: any[] = [];
+  // Weekly Timesheet Data
+  uploadedFiles: any[] = [];
   uploadedFilesCount = 0;
   uploadedFileNames: string[] = [];
 
-  onFileUpload(event: any): void {
-    const files = event.target.files;
-    this.uploadedFilesCount = files.length;
-    this.uploadedFileNames = [];
-    this.dailyData = [];
+  // Team Leader Timesheet Data
+  leaderUploadedFiles: any[] = [];
+  leaderUploadedFilesCount = 0;
+  leaderUploadedFileNames: string[] = [];
 
-    if (files.length > 0) {
-      Array.from(files).forEach((file: any) => {
-        this.uploadedFileNames.push(file.name);
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const parsedData = XLSX.utils.sheet_to_json(worksheet);
-          this.dailyData.push(...parsedData);
-        };
-        reader.readAsArrayBuffer(file);
-      });
-    }
+  onWeeklyFileUpload(event: any): void {
+    this.processFileUpload(event, 'weekly');
   }
+
+
+  onLeaderFileUpload(event: any): void {
+    this.processFileUpload(event, 'leader');
+  }
+
+
+  private processFileUpload(event: any, type: 'weekly' | 'leader'): void {
+    const files = event.target.files;
+    if (!files.length) return;
+
+    if (type === 'weekly') {
+      this.uploadedFilesCount = files.length;
+      this.uploadedFileNames = [];
+      this.uploadedFiles = [];
+    } else {
+      this.leaderUploadedFilesCount = files.length;
+      this.leaderUploadedFileNames = [];
+      this.leaderUploadedFiles = [];
+    }
+
+    Array.from(files).forEach((file: any) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const parsedData = XLSX.utils.sheet_to_json(worksheet);
+
+        if (type === 'weekly') {
+          this.uploadedFileNames.push(file.name);
+          this.uploadedFiles.push(...parsedData);
+        } else {
+          this.leaderUploadedFileNames.push(file.name);
+          this.leaderUploadedFiles.push(...parsedData);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
 
   generateWeeklySummary(): void {
-    if (!this.dailyData.length) return;
+    if (!this.uploadedFiles.length) return;
 
-    const currentUserEmail = this.dailyData[0]['Owner Mailid'];
-    const userTasks = this.dailyData.filter((task) => task['Owner Mailid'] === currentUserEmail);
+    const currentUserEmail = this.uploadedFiles[0]['Owner Mailid'];
+    const userTasks = this.uploadedFiles.filter((task) => task['Owner Mailid'] === currentUserEmail);
 
-    const weeklySummary = this.prepareWeeklySummary(userTasks);
-    this.exportToExcelWithColors(weeklySummary, `Weekly_Timesheet_${currentUserEmail}`);
+    const weeklySummary = this.prepareSummary(userTasks);
+    this.exportToExcelWithSuccess(weeklySummary, `Weekly_Timesheet_${currentUserEmail}`);
   }
 
-  generateGroupLeaderFile(): void {
-    if (!this.dailyData.length) return;
 
-    const userSheets = this.groupBy(this.dailyData, 'Owner Mailid');
-    const workbook = XLSX.utils.book_new();
+  generateTeamLeaderTimesheet(): void {
+    if (!this.leaderUploadedFiles.length) return;
 
-    Object.keys(userSheets).forEach((userEmail) => {
-      const userTasks = userSheets[userEmail];
-      const weeklySummary = this.prepareWeeklySummary(userTasks);
+    // Group by "Task Owner" first
+    const groupedByOwner = this.groupBy(this.leaderUploadedFiles, 'User');
+    let teamTimesheet: any[] = [];
 
-      const worksheet = this.createColoredWorksheet(weeklySummary);
-      XLSX.utils.book_append_sheet(workbook, worksheet, userEmail.split('@')[0]);
+    Object.keys(groupedByOwner).forEach((owner) => {
+      const tasks = groupedByOwner[owner];
+
+      // Sort tasks by Task ID within each Owner's group
+      tasks.sort((a, b) => (a['Task/Issue ID'] > b['Task/Issue ID'] ? 1 : -1));
+
+      tasks.forEach((task) => {
+        const totalLogHours = this.calculateTotalHours(task['Daily Log'] || '00:00');
+
+        const combinedComments = (task['Notes']?.trim() || '')
+          ? `• ${task['Notes'].trim()}`
+          : 'No Comments';
+
+        teamTimesheet.push({
+          'Task ID': task['Task/Issue ID'] || '',
+          'Task Name': task['Task/General/Issue'] || '',
+          'Project Name': task['Project Name'] || '',
+          'Task List Name': task['Task List/Module'] || '',
+          'Custom Status': 'Completed',
+          'Task Owner': task['User'] || '',
+          'Total Log Hours': totalLogHours,
+          'Task Comment': combinedComments,
+        });
+      });
     });
 
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(blob, `Group_Weekly_Timesheet.xlsx`);
+    this.exportToExcelWithSuccess(teamTimesheet, `Team_Leader_Timesheet`);
   }
 
-  private prepareWeeklySummary(tasks: any[]): any[] {
+
+  private prepareSummary(tasks: any[]): any[] {
     const groupedData = this.groupBy(tasks, 'Task/Issue ID');
     const weeklySummary: any[] = [];
 
@@ -84,16 +132,13 @@ export class TimesheetComponent {
         .map((comment) => `• ${comment}`)
         .join('\n');
 
-      const ownerMail = taskGroup[0]['Owner Mailid'] || '';
-      const taskOwnerName = this.formatOwnerName(ownerMail);
-
       weeklySummary.push({
         'Task ID': taskId,
         'Task Name': taskGroup[0]['Task/General/Issue'] || '',
-        'Project Name': 'I_TTF_DEV_ALL ROUNDERS',
+        'Project Name': taskGroup[0]['Project Name'] || '',
         'Task List Name': taskGroup[0]['Task List/Module'] || '',
         'Custom Status': 'Completed',
-        'Task Owner': taskOwnerName,
+        'Task Owner': taskGroup[0]['User'] || '',
         'Total Log Hours': totalLogHours,
         'Task Comment': combinedComments || 'No Comments',
       });
@@ -102,6 +147,7 @@ export class TimesheetComponent {
     return weeklySummary;
   }
 
+
   private groupBy(array: any[], key: string): { [key: string]: any[] } {
     return array.reduce((result, currentValue) => {
       (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
@@ -109,69 +155,34 @@ export class TimesheetComponent {
     }, {});
   }
 
-  private calculateTotalHours(timeStrings: string[]): string {
+  private calculateTotalHours(timeStrings: string | string[]): string {
     let totalMinutes = 0;
+    
+    // Ensure timeStrings is always an array
+    const timeArray = Array.isArray(timeStrings) ? timeStrings : [timeStrings];
 
-    timeStrings.forEach((time) => {
+    timeArray.forEach((time) => {
+      if (typeof time !== 'string') return; // Ignore invalid data
       const [hours, minutes] = time.split(':').map((val) => parseInt(val, 10) || 0);
       totalMinutes += hours * 60 + minutes;
     });
 
-    const totalHours = Math.floor(totalMinutes / 60);
-    const remainingMinutes = totalMinutes % 60;
-
-    return `${this.padWithZero(totalHours)}:${this.padWithZero(remainingMinutes)}`;
+    return `${Math.floor(totalMinutes / 60)}:${totalMinutes % 60}`;
   }
 
-  private formatOwnerName(email: string): string {
-    const namePart = email.split('@')[0];
-    return namePart.replace(/\./g, ' ');
-  }
 
-  private padWithZero(value: number): string {
-    return value < 10 ? `0${value}` : `${value}`;
-  }
-
-  private createColoredWorksheet(data: any[]): any {
+  private exportToExcelWithSuccess(data: any[], fileName: string): void {
     const worksheet = XLSX.utils.json_to_sheet(data);
-
-    const range = XLSX.utils.decode_range(worksheet['!ref']!);
-    const headerStyle = {
-      font: { bold: true, color: { rgb: 'FFFFFF' } }, // Bold white text
-      fill: { fgColor: { rgb: 'E4C2E3' } }, // Light purple background
-    };
-    const rowColors = ['FFFFFF', 'C9DFF2']; // Alternating row colors: white and light blue
-
-    // Apply header styles to the first row
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-      if (worksheet[cellAddress]) {
-        worksheet[cellAddress].s = headerStyle;
-      }
-    }
-
-    // Apply alternating row colors
-    for (let row = 1; row <= range.e.r; row++) {
-      const rowStyle = { fill: { fgColor: { rgb: rowColors[row % 2] } } }; // Alternating color
-      for (let col = range.s.c; col <= range.e.c; col++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
-        if (worksheet[cellAddress]) {
-          worksheet[cellAddress].s = rowStyle;
-        }
-      }
-    }
-
-    return worksheet;
-  }
-
-  private exportToExcelWithColors(data: any[], fileName: string): void {
-    const worksheet = this.createColoredWorksheet(data);
-
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Weekly Summary');
-
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Summary');
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(blob, `${fileName}.xlsx`);
+
+  
+    setTimeout(() => {
+      alert(`✅ ${fileName}.xlsx has been successfully downloaded!`);
+      window.location.reload(); // Auto refresh after download
+    }, 500);
   }
 }

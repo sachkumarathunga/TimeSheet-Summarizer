@@ -7,4 +7,8 @@ import { TimesheetComponent } from './timesheet/timesheet.component';
   imports: [TimesheetComponent], // Import TimesheetComponent
   template: `<app-timesheet></app-timesheet>`,
 })
-export class AppComponent {}
+export class AppComponent {
+  title(title: any) {
+    throw new Error('Method not implemented.');
+  }
+}
