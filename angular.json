@@ -18,16 +18,11 @@
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
+            "assets": ["src/assets"],  
             "styles": ["src/styles.css"],
             "scripts": [],
-            "baseHref": "/WeeklyTimesheetApp/",  
-            "deployUrl": "/WeeklyTimesheetApp/"  
+            "baseHref": "/TimeSheet-Summarizer/",  
+            "deployUrl": "/TimeSheet-Summarizer/"  
           },
           "configurations": {
             "production": {
@@ -73,12 +68,7 @@
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
+            "assets": ["src/assets"],
             "styles": ["src/styles.css"],
             "scripts": []
           }
