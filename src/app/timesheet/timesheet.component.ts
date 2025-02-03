@@ -25,11 +25,9 @@ export class TimesheetComponent {
     this.processFileUpload(event, 'weekly');
   }
 
-
   onLeaderFileUpload(event: any): void {
     this.processFileUpload(event, 'leader');
   }
-
 
   private processFileUpload(event: any, type: 'weekly' | 'leader'): void {
     const files = event.target.files;
@@ -66,7 +64,6 @@ export class TimesheetComponent {
     });
   }
 
-
   generateWeeklySummary(): void {
     if (!this.uploadedFiles.length) return;
 
@@ -76,7 +73,6 @@ export class TimesheetComponent {
     const weeklySummary = this.prepareSummary(userTasks);
     this.exportToExcelWithSuccess(weeklySummary, `Weekly_Timesheet_${currentUserEmail}`);
   }
-
 
   generateTeamLeaderTimesheet(): void {
     if (!this.leaderUploadedFiles.length) return;
@@ -88,32 +84,40 @@ export class TimesheetComponent {
     Object.keys(groupedByOwner).forEach((owner) => {
       const tasks = groupedByOwner[owner];
 
-      // Sort tasks by Task ID within each Owner's group
-      tasks.sort((a, b) => (a['Task/Issue ID'] > b['Task/Issue ID'] ? 1 : -1));
+      // Now, Group by "Task ID" to prevent duplicates
+      const groupedByTaskID = this.groupBy(tasks, 'Task/Issue ID');
 
-      tasks.forEach((task) => {
-        const totalLogHours = this.calculateTotalHours(task['Daily Log'] || '00:00');
+      Object.keys(groupedByTaskID).forEach((taskId) => {
+        const taskGroup = groupedByTaskID[taskId];
 
-        const combinedComments = (task['Notes']?.trim() || '')
-          ? `• ${task['Notes'].trim()}`
-          : 'No Comments';
+        // Merge Daily Log hours for each task
+        const totalLogHours = this.calculateTotalHours(
+          taskGroup.map((task) => task['Daily Log'] || '00:00')
+        );
 
+        // Combine task comments
+        const combinedComments = taskGroup
+          .map((task) => task['Notes']?.trim() || '')
+          .filter((comment) => comment && comment !== '-')
+          .map((comment) => `• ${comment}`)
+          .join('\n');
+
+        // Push unique task per owner
         teamTimesheet.push({
-          'Task ID': task['Task/Issue ID'] || '',
-          'Task Name': task['Task/General/Issue'] || '',
-          'Project Name': task['Project Name'] || '',
-          'Task List Name': task['Task List/Module'] || '',
+          'Task ID': taskId,
+          'Task Name': taskGroup[0]['Task/General/Issue'] || '',
+          'Project Name': taskGroup[0]['Project Name'] || '',
+          'Task List Name': taskGroup[0]['Task List/Module'] || '',
           'Custom Status': 'Completed',
-          'Task Owner': task['User'] || '',
+          'Task Owner': taskGroup[0]['User'] || '',
           'Total Log Hours': totalLogHours,
-          'Task Comment': combinedComments,
+          'Task Comment': combinedComments || 'No Comments',
         });
       });
     });
 
     this.exportToExcelWithSuccess(teamTimesheet, `Team_Leader_Timesheet`);
   }
-
 
   private prepareSummary(tasks: any[]): any[] {
     const groupedData = this.groupBy(tasks, 'Task/Issue ID');
@@ -147,7 +151,6 @@ export class TimesheetComponent {
     return weeklySummary;
   }
 
-
   private groupBy(array: any[], key: string): { [key: string]: any[] } {
     return array.reduce((result, currentValue) => {
       (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
@@ -170,7 +173,6 @@ export class TimesheetComponent {
     return `${Math.floor(totalMinutes / 60)}:${totalMinutes % 60}`;
   }
 
-
   private exportToExcelWithSuccess(data: any[], fileName: string): void {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -179,7 +181,6 @@ export class TimesheetComponent {
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(blob, `${fileName}.xlsx`);
 
-  
     setTimeout(() => {
       alert(`✅ ${fileName}.xlsx has been successfully downloaded!`);
       window.location.reload(); // Auto refresh after download
