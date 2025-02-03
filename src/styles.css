@@ -1,9 +1,9 @@
-/* 🔥 Full Screen Background */
+
 body {
   background: black;
 }
 
-/* 📷 Left Side: Full Cover Image */
+
 .image-container {
   flex: 1;
   display: flex;

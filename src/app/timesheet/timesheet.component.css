@@ -1,11 +1,10 @@
-/* 🌍 Global Reset */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* 🔥 Full Screen Background */
 body {
   background: black;
   display: flex;
@@ -17,7 +16,7 @@ body {
   color: #E0E7FF; /* Soft white-blue text */
 }
 
-/* 🖼 Main Layout */
+
 .main-container {
   display: flex;
   width: 100%;
@@ -27,7 +26,7 @@ body {
   justify-content: space-between;
 }
 
-/* 📷 Left Side: Full Cover Image */
+
 .image-container {
   flex: 1;
   height: 100vh;
@@ -35,7 +34,7 @@ body {
   background-size: cover;
 }
 
-/* 📂 Right Side: Forms */
+
 .right-container {
   flex: 1;
   display: flex;
@@ -45,7 +44,7 @@ body {
   justify-content: center;
 }
 
-/* 🔲 Neon Box */
+
 .neon-box {
   background: rgba(10, 25, 45, 0.95); /* Dark futuristic blue */
   backdrop-filter: blur(10px);
@@ -60,7 +59,7 @@ body {
 }
 
 
-/* 🏆 Heading */
+
 h1 {
   
   font-size: 28px;
@@ -69,7 +68,7 @@ h1 {
   font-weight: bold;
 }
 
-/* 📤 Upload Section */
+
 .upload-section {
   margin-top: 1cm;
   margin-bottom: 20px;
@@ -103,7 +102,7 @@ label:hover {
   box-shadow: 0 0 10px rgba(72, 239, 255, 1);
 }
 
-/* 📂 File List */
+
 .file-list {
   margin-top: 15px;
   text-align: left;
@@ -122,7 +121,7 @@ label:hover {
   color: #E0E7FF;
 }
 
-/* 🔘 Buttons */
+
 button {
   background: linear-gradient(90deg, #0066ff, #48EFFF); /* Blue gradient */
   border: none;
@@ -140,7 +139,6 @@ button:hover {
   box-shadow: 0 0 15px #48EFFF;
 }
 
-/* 🔥 Team Leader Box */
 .leader {
   background: rgba(15, 25, 55, 0.95);
   box-shadow: 0 0 20px rgba(102, 217, 255, 0.7); /* Lighter cyan */
@@ -158,7 +156,7 @@ button:hover {
   background: rgba(90, 190, 255, 0.9);
 }
 
-/* 📱 Responsive Design */
+/*Responsive Design */
 @media (max-width: 1024px) {
   .main-container {
     flex-direction: column;
