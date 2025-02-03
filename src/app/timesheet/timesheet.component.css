@@ -31,7 +31,7 @@ body {
 .image-container {
   flex: 1;
   height: 100vh;
-  background: url("/assets/images/home3.jpg") no-repeat center center;
+  background: url("/src/images/home3.jpg") no-repeat center center;
   background-size: cover;
 }
 
