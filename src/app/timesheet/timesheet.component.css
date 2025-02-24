@@ -1,11 +1,10 @@
-/* 🌍 Reset Default Styles */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* 🌌 Full-Screen Layout */
 html, body {
   background: black;
   overflow: hidden; /* Removes Scrollbars */
@@ -17,14 +16,14 @@ html, body {
   color: #FFFFFF; /* White text */
 }
 
-/* 🖼 Main Layout */
+
 .main-container {
   display: flex;
   width: 100vw;
   height: 100vh;
 }
 
-/* 🎨 Left Side: Full-Screen Background Image */
+
 .image-container {
   width: 50vw; /* Half screen */
   height: 100vh;
@@ -36,16 +35,16 @@ html, body {
   object-fit: cover;
 }
 
-/* 📤 Right Side: Centered Upload Box */
+
 .right-container {
-  width: 60vw; /* Half screen */
+  width: 60vw; 
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-right: 1vw; /* Adjust spacing */
+  padding-right: 1vw; 
 }
 
-/* 🔲 Stylish Upload Box */
+
 .neon-box {
   background: rgba(20, 10, 40, 0.95); /* Dark Purple */
   padding: 50px;
@@ -55,7 +54,7 @@ html, body {
   text-align: center;
 }
 
-/* 🏆 Upload Box Title */
+
 .neon-box h1 {
   font-size: 28px;
   color: #E0B3FF; /* Soft Purple */
@@ -64,7 +63,7 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* 📤 Upload Section */
+
 .upload-section {
   margin-bottom: 25px;
   position: relative;
@@ -101,7 +100,7 @@ label:hover {
   box-shadow: 0 0 20px rgba(190, 90, 255, 1);
 }
 
-/* 🔘 Buttons */
+
 button {
   display: flex;
   align-items: center;
@@ -123,7 +122,7 @@ button:hover {
   box-shadow: 0 0 20px #A600FF;
 }
 
-/* 📂 File List */
+
 .file-list {
   margin-top: 15px;
   text-align: left;
@@ -142,7 +141,7 @@ button:hover {
   color: #FFFFFF;
 }
 
-/* 📱 Responsive Design */
+
 @media (max-width: 1024px) {
   .main-container {
     flex-direction: column;

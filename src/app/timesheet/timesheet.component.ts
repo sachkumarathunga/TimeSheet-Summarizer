@@ -11,12 +11,12 @@ import saveAs from 'file-saver';
   styleUrls: ['./timesheet.component.css'],
 })
 export class TimesheetComponent {
-  // Weekly Timesheet Data
+
   uploadedFiles: any[] = [];
   uploadedFilesCount = 0;
   uploadedFileNames: string[] = [];
 
-  // Team Leader Timesheet Data
+
   leaderUploadedFiles: any[] = [];
   leaderUploadedFilesCount = 0;
   leaderUploadedFileNames: string[] = [];
@@ -114,7 +114,7 @@ export class TimesheetComponent {
     this.exportToExcelWithSuccess(teamTimesheet, `Team_Leader_Timesheet`);
   }
 
-  /** 🔥 FIXED: Added Missing `prepareSummary` Method */
+
   private prepareSummary(tasks: any[]): any[] {
     const groupedData = this.groupBy(tasks, 'Task/Issue ID');
     const weeklySummary: any[] = [];
