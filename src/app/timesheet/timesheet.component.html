@@ -1,17 +1,19 @@
 <div class="main-container">
 
+  <!-- Left Side: Full Cover Image -->
   <div class="image-container">
     <img src="assets/images/home3.jpg" alt="Background Image" />
   </div>
 
-
+  <!-- Right Side: Content Boxes -->
   <div class="right-container">
     
+    <!-- Weekly Timesheet Generator -->
     <div class="neon-box">
       <h1>Weekly Timesheet Generator</h1>
       <div class="upload-section">
-        <input type="file" (change)="onWeeklyFileUpload($event)" multiple accept=".xlsx, .xls" />
-        <label for="file">📤 Upload Weekly Timesheet</label>
+        <input type="file" id="weeklyFile" (change)="onWeeklyFileUpload($event)" multiple accept=".xlsx, .xls" />
+        <label for="weeklyFile">📤 Upload Weekly Timesheet</label>
       </div>
       <div class="file-list" *ngIf="uploadedFilesCount > 0">
         <h3>Uploaded Weekly Files</h3>
@@ -20,18 +22,19 @@
       <button (click)="generateWeeklySummary()">Generate Weekly File</button>
     </div>
 
-    <div class="neon-box leader">
+    <!-- Team Leader Timesheet Generator -->
+    <!-- <div class="neon-box leader"> 
       <h1>Team Leader Timesheet Generator</h1>
       <div class="upload-section">
-        <input type="file" (change)="onLeaderFileUpload($event)" multiple accept=".xlsx, .xls" />
-        <label for="file">📤 Upload Team Leader Timesheet</label>
+        <input type="file" id="leaderFile" (change)="onLeaderFileUpload($event)" multiple accept=".xlsx, .xls" />
+        <label for="leaderFile">📤 Upload Team Leader Timesheet</label>
       </div>
       <div class="file-list" *ngIf="leaderUploadedFilesCount > 0">
         <h3>Uploaded Leader Files</h3>
         <div *ngFor="let file of leaderUploadedFileNames">{{ file }}</div>
       </div>
       <button (click)="generateTeamLeaderTimesheet()">Generate Team Leader File</button>
-    </div>
+    </div>-->
     
   </div>
 </div>

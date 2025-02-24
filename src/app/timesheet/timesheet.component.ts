@@ -70,39 +70,34 @@ export class TimesheetComponent {
     const currentUserEmail = this.uploadedFiles[0]['Owner Mailid'];
     const userTasks = this.uploadedFiles.filter((task) => task['Owner Mailid'] === currentUserEmail);
 
-    const weeklySummary = this.prepareSummary(userTasks);
+    const weeklySummary = this.prepareSummary(userTasks); // 🔥 FIXED ERROR
     this.exportToExcelWithSuccess(weeklySummary, `Weekly_Timesheet_${currentUserEmail}`);
   }
 
   generateTeamLeaderTimesheet(): void {
     if (!this.leaderUploadedFiles.length) return;
 
-    // Group by "Task Owner" first
     const groupedByOwner = this.groupBy(this.leaderUploadedFiles, 'User');
     let teamTimesheet: any[] = [];
 
     Object.keys(groupedByOwner).forEach((owner) => {
       const tasks = groupedByOwner[owner];
 
-      // Now, Group by "Task ID" to prevent duplicates
       const groupedByTaskID = this.groupBy(tasks, 'Task/Issue ID');
 
       Object.keys(groupedByTaskID).forEach((taskId) => {
         const taskGroup = groupedByTaskID[taskId];
 
-        // Merge Daily Log hours for each task
-        const totalLogHours = this.calculateTotalHours(
-          taskGroup.map((task) => task['Daily Log'] || '00:00')
+        const totalLogHours = this.formatTotalHours(
+          this.calculateTotalHours(taskGroup.map((task) => task['Daily Log'] || '00:00'))
         );
 
-        // Combine task comments
         const combinedComments = taskGroup
           .map((task) => task['Notes']?.trim() || '')
           .filter((comment) => comment && comment !== '-')
           .map((comment) => `• ${comment}`)
           .join('\n');
 
-        // Push unique task per owner
         teamTimesheet.push({
           'Task ID': taskId,
           'Task Name': taskGroup[0]['Task/General/Issue'] || '',
@@ -119,6 +114,7 @@ export class TimesheetComponent {
     this.exportToExcelWithSuccess(teamTimesheet, `Team_Leader_Timesheet`);
   }
 
+  /** 🔥 FIXED: Added Missing `prepareSummary` Method */
   private prepareSummary(tasks: any[]): any[] {
     const groupedData = this.groupBy(tasks, 'Task/Issue ID');
     const weeklySummary: any[] = [];
@@ -126,8 +122,8 @@ export class TimesheetComponent {
     for (const taskId in groupedData) {
       const taskGroup = groupedData[taskId];
 
-      const totalLogHours = this.calculateTotalHours(
-        taskGroup.map((task) => task['Daily Log'] || '00:00')
+      const totalLogHours = this.formatTotalHours(
+        this.calculateTotalHours(taskGroup.map((task) => task['Daily Log'] || '00:00'))
       );
 
       const combinedComments = taskGroup
@@ -151,26 +147,27 @@ export class TimesheetComponent {
     return weeklySummary;
   }
 
+  private formatTotalHours(minutes: number): string {
+    const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+    const mins = (minutes % 60).toString().padStart(2, '0');
+    return `${hours}:${mins}`;
+  }
+
+  private calculateTotalHours(timeStrings: string[]): number {
+    let totalMinutes = 0;
+    timeStrings.forEach((time) => {
+      if (typeof time !== 'string') return;
+      const [hours, minutes] = time.split(':').map((val) => parseInt(val, 10) || 0);
+      totalMinutes += hours * 60 + minutes;
+    });
+    return totalMinutes;
+  }
+
   private groupBy(array: any[], key: string): { [key: string]: any[] } {
     return array.reduce((result, currentValue) => {
       (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
       return result;
     }, {});
-  }
-
-  private calculateTotalHours(timeStrings: string | string[]): string {
-    let totalMinutes = 0;
-    
-    // Ensure timeStrings is always an array
-    const timeArray = Array.isArray(timeStrings) ? timeStrings : [timeStrings];
-
-    timeArray.forEach((time) => {
-      if (typeof time !== 'string') return; // Ignore invalid data
-      const [hours, minutes] = time.split(':').map((val) => parseInt(val, 10) || 0);
-      totalMinutes += hours * 60 + minutes;
-    });
-
-    return `${Math.floor(totalMinutes / 60)}:${totalMinutes % 60}`;
   }
 
   private exportToExcelWithSuccess(data: any[], fileName: string): void {
@@ -183,7 +180,7 @@ export class TimesheetComponent {
 
     setTimeout(() => {
       alert(`✅ ${fileName}.xlsx has been successfully downloaded!`);
-      window.location.reload(); // Auto refresh after download
+      window.location.reload();
     }, 500);
   }
 }

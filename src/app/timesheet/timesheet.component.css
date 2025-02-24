@@ -1,78 +1,75 @@
-
+/* 🌍 Reset Default Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
+/* 🌌 Full-Screen Layout */
+html, body {
   background: black;
+  overflow: hidden; /* Removes Scrollbars */
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0;
   font-family: 'Arial', sans-serif;
-  color: #E0E7FF; /* Soft white-blue text */
+  color: #FFFFFF; /* White text */
 }
 
-
+/* 🖼 Main Layout */
 .main-container {
   display: flex;
-  width: 100%;
-  max-width: 1600px;
+  width: 100vw;
   height: 100vh;
-  align-items: center;
-  justify-content: space-between;
 }
 
-
+/* 🎨 Left Side: Full-Screen Background Image */
 .image-container {
-  flex: 1;
+  width: 50vw; /* Half screen */
   height: 100vh;
-  background: url("/src/images/home3.jpg") no-repeat center center;
-  background-size: cover;
 }
 
-
-.right-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-  align-items: center;
-  justify-content: center;
-}
-
-
-.neon-box {
-  background: rgba(10, 25, 45, 0.95); /* Dark futuristic blue */
-  backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 0 20px rgba(72, 239, 255, 0.8); /* Bright neon cyan */
-  text-align: center;
-  max-width: 450px;
+.image-container img {
   width: 100%;
-  border: 1px solid rgba(72, 239, 255, 0.3);
-
+  height: 100%;
+  object-fit: cover;
 }
 
+/* 📤 Right Side: Centered Upload Box */
+.right-container {
+  width: 60vw; /* Half screen */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 1vw; /* Adjust spacing */
+}
 
+/* 🔲 Stylish Upload Box */
+.neon-box {
+  background: rgba(20, 10, 40, 0.95); /* Dark Purple */
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(180, 50, 255, 0.9); /* Glowing purple */
+  width: 500px; /* Adjusted Width */
+  text-align: center;
+}
 
-h1 {
-  
+/* 🏆 Upload Box Title */
+.neon-box h1 {
   font-size: 28px;
-  color: #48EFFF; /* Neon cyan */
-  text-shadow: 0 0 15px rgba(72, 239, 255, 1);
+  color: #E0B3FF; /* Soft Purple */
+  text-shadow: 0 0 25px rgba(180, 50, 255, 1);
   font-weight: bold;
+  margin-bottom: 20px;
 }
 
-
+/* 📤 Upload Section */
 .upload-section {
-  margin-top: 1cm;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 input[type="file"] {
@@ -88,89 +85,82 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(36, 163, 255, 0.8); /* Deep blue */
+  background: rgba(160, 50, 255, 0.9); /* Neon Purple */
   color: white;
-  padding: 12px;
-  border-radius: 6px;
+  padding: 16px;
+  border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  font-size: 18px;
 }
 
 label:hover {
-  background: rgba(51, 220, 255, 0.9); /* Bright cyan hover */
-  box-shadow: 0 0 10px rgba(72, 239, 255, 1);
+  background: rgba(190, 90, 255, 0.95);
+  box-shadow: 0 0 20px rgba(190, 90, 255, 1);
 }
 
+/* 🔘 Buttons */
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(90deg, #6D0AFF, #A600FF); /* Deep Purple Gradient */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
 
+button:hover {
+  box-shadow: 0 0 20px #A600FF;
+}
+
+/* 📂 File List */
 .file-list {
   margin-top: 15px;
   text-align: left;
 }
 
 .file-list h3 {
-  color: #48EFFF;
+  color: #DDA0FF; /* Soft Purple */
   font-size: 18px;
 }
 
 .file-list div {
-  background: rgba(72, 239, 255, 0.2); /* Semi-transparent neon blue */
-  padding: 10px;
+  background: rgba(160, 50, 255, 0.2);
+  padding: 12px;
   border-radius: 6px;
   margin: 5px 0;
-  color: #E0E7FF;
+  color: #FFFFFF;
 }
 
-
-button {
-  background: linear-gradient(90deg, #0066ff, #48EFFF); /* Blue gradient */
-  border: none;
-  padding: 14px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  width: 100%;
-}
-
-button:hover {
-  box-shadow: 0 0 15px #48EFFF;
-}
-
-.leader {
-  background: rgba(15, 25, 55, 0.95);
-  box-shadow: 0 0 20px rgba(102, 217, 255, 0.7); /* Lighter cyan */
-}
-
-.leader h1 {
-  color: #74D2E7;
-}
-
-.leader label {
-  background: rgba(54, 135, 190, 0.85);
-}
-
-.leader label:hover {
-  background: rgba(90, 190, 255, 0.9);
-}
-
-/*Responsive Design */
+/* 📱 Responsive Design */
 @media (max-width: 1024px) {
   .main-container {
     flex-direction: column;
-    justify-content: center;
     align-items: center;
   }
 
   .image-container {
-    height: 50vh;
     width: 100%;
+    height: 50vh;
   }
 
   .right-container {
     width: 100%;
     justify-content: center;
+    padding-right: 0;
+  }
+
+  .neon-box {
+    width: 90%;
   }
 }
